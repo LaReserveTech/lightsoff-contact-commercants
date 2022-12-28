@@ -1,5 +1,7 @@
 # lightsoff-contact-commercants
 
+[![Lint Code Base](https://github.com/LaReserveTech/lightsoff-contact-commercants/actions/workflows/linter.yml/badge.svg)](https://github.com/LaReserveTech/lightsoff-contact-commercants/actions/workflows/linter.yml)
+
 ## Variables .env à paramétrer 
 **TWILIO_ACCOUND_SID** => Votre Accound SID Twilio
 
