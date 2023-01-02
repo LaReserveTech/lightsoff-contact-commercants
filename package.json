@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/martinez-hugo/lightsoff-contact-commercants#readme",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "twilio": "^2.5.2"
   }
 }

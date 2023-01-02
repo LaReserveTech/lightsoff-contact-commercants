@@ -1,9 +1,11 @@
+require('dotenv').config();
+
 const accountSid = process.env.TWILIO_ACCOUND_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const phoneNumberFrom = process.env.TWILIO_PHONE;
 const client = require("twilio")(accountSid, authToken);
 
-var phones = ["+33652439730", "+33781041362"]
+var phones = ["+33667877564"]
 
 phones.forEach(phone => {
     if(phone[3] == "6" || phone[3] == "7") {
