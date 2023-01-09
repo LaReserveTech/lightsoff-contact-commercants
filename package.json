@@ -17,7 +17,10 @@
   },
   "homepage": "https://github.com/martinez-hugo/lightsoff-contact-commercants#readme",
   "dependencies": {
+    "curl": "^0.1.4",
     "dotenv": "^16.0.3",
+    "google-libphonenumber": "^3.2.31",
+    "postgres": "^3.3.3",
     "twilio": "^2.5.2"
   }
 }
