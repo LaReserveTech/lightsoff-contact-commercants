@@ -31,22 +31,23 @@ reviews.forEach(review => {
     // on check si on est bien sur une review ou on nous a demandé de contacter le commerce + qu'il n'y a pas d'autres reviews déjà existantes + que le numéro n'a pas déjà été contacté
     if (review["Do It For Me"] == true && findOtherReviews(google_place_id) == undefined && placesContacted.find(id => id == google_place_id) == undefined) {
         let place = findPlaceById(google_place_id) // on stock la Google Place
-        let phone_number = place["Phone Number"] // on stock le numéro associé à la Google Place
+        let phone_number_notFormatted = place["Phone Number"] // on stock le numéro associé à la Google Place
         
         // on check si le numéro n'est pas vide
         if(phone_number !== null) {
-            const number = phoneUtil.parseAndKeepRawInput(phone_number, 'FR') // on formate correctement le numéro pour Twilio
+            const number = phoneUtil.parseAndKeepRawInput(phone_numberNotFormatted, 'FR') // on formate correctement le numéro pour Twilio
+            const phone_number = phoneUtil.format(number, PNF.E164)
             
             // évaluation du numéro : si fixe => appel / si portable => SMS
-            if(number[3] == "6" || number[3] == "7") {
+            if(phone_number[3] == "6" || phone_number[3] == "7") {
                 client.messages
-                    .create({ body: "Bonjour, plusieurs clients ont indiqué que la devanture de votre commerce restait allumée la nuit. Si c’est le cas, auriez-vous la gentillesse de l’éteindre en partant le soir ? Nous sommes en pleine crise énergétique et il est essentiel que nous fassions tous attention à faire des économies d’énergie pour éviter les coupures cet hiver et préserver notre planète. Chaque geste compte. En plus, depuis février 2022 la loi a été endurcie et vous risquez une forte amende en cas de contrôle. Bonne journée.", from: phoneNumberFrom, to: number })
+                    .create({ body: "Bonjour, plusieurs clients ont indiqué que la devanture de votre commerce restait allumée la nuit. Si c’est le cas, auriez-vous la gentillesse de l’éteindre en partant le soir ? Nous sommes en pleine crise énergétique et il est essentiel que nous fassions tous attention à faire des économies d’énergie pour éviter les coupures cet hiver et préserver notre planète. Chaque geste compte. En plus, depuis février 2022 la loi a été endurcie et vous risquez une forte amende en cas de contrôle. Bonne journée.", from: phoneNumberFrom, to: phone_number })
                     .then(message => console.log(message.sid));
             } else {
                 client.calls
                     .create({
                         url: 'https://github.com/La-Reserve-Tech-For-Good/lightsoff-contact-commercants/blob/main/voice.xml',
-                        to: number,
+                        to: phone_number,
                         from: phoneNumberFrom
                     })
                     .then(call => console.log(call.sid));
