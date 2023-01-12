@@ -1,4 +1,3 @@
 <Response>
-    <Say voice="alice">Thanks for trying our documentation. Enjoy!</Say>
-    <Play>https://github.com/La-Reserve-Tech-For-Good/lightsoff-contact-commercants/blob/main/classic.mp3</Play>
+    <Play>https://github.com/La-Reserve-Tech-For-Good/lightsoff-contact-commercants/blob/main/AudioMessage.m4a</Play>
 </Response>
