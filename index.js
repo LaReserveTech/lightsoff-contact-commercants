@@ -56,8 +56,14 @@ reviews.forEach(review => {
         // on ajoute une review OVH sur l'api
         curl.post(process.env.API_URL + googlePlaceId + '/reviews', {
           do_it_for_me: false,
-          type: 'OVH'
-        }, [], console.log(err))
+          type: 'SMS'
+        }, [], function (err, res, body) {
+          if (err) {
+            console.log(err)
+          } else {
+            console.log(res.statusCode, body)
+          }
+        })
       } else {
         client.calls
           .create({
@@ -70,8 +76,14 @@ reviews.forEach(review => {
         // on ajoute une review TWILIO sur l'api
         curl.post(process.env.API_URL + googlePlaceId + '/reviews', {
           do_it_for_me: false,
-          type: 'TWILIO'
-        }, [], console.log(err))
+          type: 'PHONE_CALL'
+        }, [], function (err, res, body) {
+          if (err) {
+            console.log(err)
+          } else {
+            console.log(res.statusCode, body)
+          }
+        })
       }
 
       // on ajoute la Google Place dans le tableau des places déjà contactées au cours du run
