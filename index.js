@@ -1,88 +1,81 @@
-const reviews = require('./reviews.json');
+const reviews = require('./reviews.json')
 const places = require('./places.json')
 const curl = require('curl')
 
-const PNF = require('google-libphonenumber').PhoneNumberFormat;
-const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+const PNF = require('google-libphonenumber').PhoneNumberFormat
+const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
-require('dotenv').config();
+require('dotenv').config()
 
-const accountSid = process.env.TWILIO_ACCOUND_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const phoneNumberSMSFrom = process.env.TWILIO_PHONE_SMS;
-const phoneNumberVoiceFrom = process.env.TWILIO_PHONE_VOICE;
-const client = require("twilio")(accountSid, authToken);
+const accountSid = process.env.TWILIO_ACCOUND_SID
+const authToken = process.env.TWILIO_AUTH_TOKEN
+const phoneNumberVoiceFrom = process.env.TWILIO_PHONE_VOICE
+const client = require('twilio')(accountSid, authToken)
 
-var ovh = require('ovh')({
-    appKey: process.env.OVH_APP_KEY,
-    appSecret: process.env.OVH_APP_SECRET_KEY,
-    consumerKey: process.env.OVH_CONSUMER_KEY
-  });
+const ovh = require('ovh')({
+  appKey: process.env.OVH_APP_KEY,
+  appSecret: process.env.OVH_APP_SECRET_KEY,
+  consumerKey: process.env.OVH_CONSUMER_KEY
+})
 
 const findPlaceById = (id) => {
-    const key = Object.keys(places).find(place => places[place]["Google Place ID"] === id)
-    return places[key]
+  const key = Object.keys(places).find(place => places[place]['Google Place ID'] === id)
+  return places[key]
 }
 
 const findOtherReviews = (id) => {
-    const key = Object.keys(reviews).find(review => reviews[review]["Google Place ID"] === id && reviews[review]["Do It For Me"] == false)
-    return reviews[key]
+  const key = Object.keys(reviews).find(review => reviews[review]['Google Place ID'] === id && reviews[review]['Do It For Me'] === false)
+  return reviews[key]
 }
 
-let placesContacted = [] // array temporaire pour stocker les lieux déjà contactés au cours du run actuel de l'algo
+const placesContacted = [] // array temporaire pour stocker les lieux déjà contactés au cours du run actuel de l'algo
 
 reviews.forEach(review => {
-    let google_place_id = review["Google Place ID"] // stockage du Google Place ID de la review traitée en cours
+  const googlePlaceId = review['Google Place ID'] // stockage du Google Place ID de la review traitée en cours
 
-    
-    // on check si on est bien sur une review ou on nous a demandé de contacter le commerce + qu'il n'y a pas d'autres reviews déjà existantes + que le numéro n'a pas déjà été contacté
-    if (review["Do It For Me"] == true && findOtherReviews(google_place_id) == undefined && placesContacted.find(id => id == google_place_id) == undefined) {
-        let place = findPlaceById(google_place_id) // on stock la Google Place
-        let phone_number_notFormatted = place["Phone Number"] // on stock le numéro associé à la Google Place
-        
-        // on check si le numéro n'est pas vide
-        if(phone_number !== null) {
-            const number = phoneUtil.parseAndKeepRawInput(phone_numberNotFormatted, 'FR') // on formate correctement le numéro pour Twilio/OVH
-            const phone_number = phoneUtil.format(number, PNF.E164)
-            
-            // évaluation du numéro : si fixe => appel / si portable => SMS
-            if(phone_number[3] == "6" || phone_number[3] == "7") {
-                ovh.request('POST', '/sms/' + process.env.OVH_SERVICE_NAME + '/jobs', {
-                    message: "Bonjour, plusieurs clients ont indiqué que la devanture de votre commerce restait allumée la nuit. Si c’est le cas, auriez-vous la gentillesse de l’éteindre en partant le soir ? Nous sommes en pleine crise énergétique et il est essentiel que nous fassions tous attention à faire des économies d’énergie pour éviter les coupures cet hiver et préserver notre planète. Chaque geste compte. En plus, depuis février 2022 la loi a été endurcie et vous risquez une forte amende en cas de contrôle. Bonne journée.",
-                    senderForResponse: true,
-                    receivers: [phone_number]
-                }, function (errsend, result) {
-                    console.log(errsend, result);
-                });
+  // on check si on est bien sur une review ou on nous a demandé de contacter le commerce + qu'il n'y a pas d'autres reviews déjà existantes + que le numéro n'a pas déjà été contacté
+  if (review['Do It For Me'] === true && findOtherReviews(googlePlaceId) === undefined && placesContacted.find(id => id === googlePlaceId) === undefined) {
+    const place = findPlaceById(googlePlaceId) // on stock la Google Place
+    const phoneNumberNotFormatted = place['Phone Number'] // on stock le numéro associé à la Google Place
 
-                // on ajoute une review OVH sur l'api
-                curl.post(process.env.API_URL + google_place_id + '/reviews', {
-                    "do_it_for_me": false,
-                    "type": "OVH"
-                },[],console.log(err))
-            } else {
-                client.calls
-                    .create({
-                        url: 'https://github.com/La-Reserve-Tech-For-Good/lightsoff-contact-commercants/blob/main/voice.xml',
-                        to: phone_number,
-                        from: phoneNumberVoiceFrom
-                    })
-                    .then(call => console.log(call.sid));
+    // on check si le numéro n'est pas vide
+    if (phoneNumberNotFormatted !== null) {
+      const number = phoneUtil.parseAndKeepRawInput(phoneNumberNotFormatted, 'FR') // on formate correctement le numéro pour Twilio/OVH
+      const phoneNumber = phoneUtil.format(number, PNF.E164)
 
-                // on ajoute une review TWILIO sur l'api
-                curl.post(process.env.API_URL + google_place_id + '/reviews', {
-                    "do_it_for_me": false,
-                    "type": "TWILIO"
-                },[],console.log(err))
-            }
+      // évaluation du numéro : si fixe => appel / si portable => SMS
+      if (phoneNumber[3] === '6' || phoneNumber[3] === '7') {
+        ovh.request('POST', '/sms/' + process.env.OVH_SERVICE_NAME + '/jobs', {
+          message: 'Bonjour, plusieurs clients ont indiqué que la devanture de votre commerce restait allumée la nuit. Si c’est le cas, auriez-vous la gentillesse de l’éteindre en partant le soir ? Nous sommes en pleine crise énergétique et il est essentiel que nous fassions tous attention à faire des économies d’énergie pour éviter les coupures cet hiver et préserver notre planète. Chaque geste compte. En plus, depuis février 2022 la loi a été endurcie et vous risquez une forte amende en cas de contrôle. Bonne journée.',
+          senderForResponse: true,
+          receivers: [phoneNumber]
+        }, function (errsend, result) {
+          console.log(errsend, result)
+        })
 
-            
+        // on ajoute une review OVH sur l'api
+        curl.post(process.env.API_URL + googlePlaceId + '/reviews', {
+          do_it_for_me: false,
+          type: 'OVH'
+        }, [], console.log(err))
+      } else {
+        client.calls
+          .create({
+            url: 'https://github.com/La-Reserve-Tech-For-Good/lightsoff-contact-commercants/blob/main/voice.xml',
+            to: phoneNumber,
+            from: phoneNumberVoiceFrom
+          })
+          .then(call => console.log(call.sid))
 
-            // on ajoute la Google Place dans le tableau des places déjà contactées au cours du run
-            placesContacted.push(google_place_id)
-        }
-        
+        // on ajoute une review TWILIO sur l'api
+        curl.post(process.env.API_URL + googlePlaceId + '/reviews', {
+          do_it_for_me: false,
+          type: 'TWILIO'
+        }, [], console.log(err))
+      }
+
+      // on ajoute la Google Place dans le tableau des places déjà contactées au cours du run
+      placesContacted.push(googlePlaceId)
     }
-});
-
-
+  }
+})
