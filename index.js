@@ -13,6 +13,12 @@ const phoneNumberSMSFrom = process.env.TWILIO_PHONE_SMS;
 const phoneNumberVoiceFrom = process.env.TWILIO_PHONE_VOICE;
 const client = require("twilio")(accountSid, authToken);
 
+var ovh = require('ovh')({
+    appKey: process.env.OVH_APP_KEY,
+    appSecret: process.env.OVH_APP_SECRET_KEY,
+    consumerKey: process.env.OVH_CONSUMER_KEY
+  });
+
 const findPlaceById = (id) => {
     const key = Object.keys(places).find(place => places[place]["Google Place ID"] === id)
     return places[key]
@@ -36,14 +42,24 @@ reviews.forEach(review => {
         
         // on check si le numéro n'est pas vide
         if(phone_number !== null) {
-            const number = phoneUtil.parseAndKeepRawInput(phone_numberNotFormatted, 'FR') // on formate correctement le numéro pour Twilio
+            const number = phoneUtil.parseAndKeepRawInput(phone_numberNotFormatted, 'FR') // on formate correctement le numéro pour Twilio/OVH
             const phone_number = phoneUtil.format(number, PNF.E164)
             
             // évaluation du numéro : si fixe => appel / si portable => SMS
             if(phone_number[3] == "6" || phone_number[3] == "7") {
-                client.messages
-                    .create({ body: "Bonjour, plusieurs clients ont indiqué que la devanture de votre commerce restait allumée la nuit. Si c’est le cas, auriez-vous la gentillesse de l’éteindre en partant le soir ? Nous sommes en pleine crise énergétique et il est essentiel que nous fassions tous attention à faire des économies d’énergie pour éviter les coupures cet hiver et préserver notre planète. Chaque geste compte. En plus, depuis février 2022 la loi a été endurcie et vous risquez une forte amende en cas de contrôle. Bonne journée.", from: phoneNumberSMSFrom, to: phone_number })
-                    .then(message => console.log(message.sid));
+                ovh.request('POST', '/sms/' + process.env.OVH_SERVICE_NAME + '/jobs', {
+                    message: "Bonjour, plusieurs clients ont indiqué que la devanture de votre commerce restait allumée la nuit. Si c’est le cas, auriez-vous la gentillesse de l’éteindre en partant le soir ? Nous sommes en pleine crise énergétique et il est essentiel que nous fassions tous attention à faire des économies d’énergie pour éviter les coupures cet hiver et préserver notre planète. Chaque geste compte. En plus, depuis février 2022 la loi a été endurcie et vous risquez une forte amende en cas de contrôle. Bonne journée.",
+                    senderForResponse: true,
+                    receivers: [phone_number]
+                }, function (errsend, result) {
+                    console.log(errsend, result);
+                });
+
+                // on ajoute une review OVH sur l'api
+                curl.post(process.env.API_URL + google_place_id + '/reviews', {
+                    "do_it_for_me": false,
+                    "type": "OVH"
+                },[],console.log(err))
             } else {
                 client.calls
                     .create({
@@ -52,13 +68,15 @@ reviews.forEach(review => {
                         from: phoneNumberVoiceFrom
                     })
                     .then(call => console.log(call.sid));
+
+                // on ajoute une review TWILIO sur l'api
+                curl.post(process.env.API_URL + google_place_id + '/reviews', {
+                    "do_it_for_me": false,
+                    "type": "TWILIO"
+                },[],console.log(err))
             }
 
-            // on ajoute une review TWILIO sur l'api
-            curl.post(process.env.API_URL + google_place_id + '/reviews', {
-                "do_it_for_me": false,
-                "type": "TWILIO"
-            },[],console.log(err))
+            
 
             // on ajoute la Google Place dans le tableau des places déjà contactées au cours du run
             placesContacted.push(google_place_id)
