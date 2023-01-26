@@ -23,7 +23,7 @@
     "google-libphonenumber": "^3.2.32",
     "ovh": "^2.0.3",
     "postgres": "^3.3.3",
-    "twilio": "^3.84.1"
+    "twilio": "^4.0.0"
   },
   "env": {
     "path": ".",
