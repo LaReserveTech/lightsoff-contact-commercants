@@ -48,6 +48,8 @@ reviews.forEach(review => {
         ovh.request('POST', '/sms/' + process.env.OVH_SERVICE_NAME + '/jobs', {
           message: 'Bonjour, plusieurs clients ont indiqué que la devanture de votre commerce restait allumée la nuit. Si c’est le cas, auriez-vous la gentillesse de l’éteindre en partant le soir ? Nous sommes en pleine crise énergétique et il est essentiel que nous fassions tous attention à faire des économies d’énergie pour éviter les coupures cet hiver et préserver notre planète. Chaque geste compte. En plus, depuis février 2022 la loi a été endurcie et vous risquez une forte amende en cas de contrôle. Bonne journée.',
           senderForResponse: true,
+          noStopClause: true,
+          tag: 'Contact SMS LightsOff',
           receivers: [phoneNumber]
         }, function (errsend, result) {
           console.log(errsend, result)
