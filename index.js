@@ -69,7 +69,7 @@ reviews.forEach(review => {
       } else {
         client.calls
           .create({
-            url: 'https://github.com/La-Reserve-Tech-For-Good/lightsoff-contact-commercants/blob/main/voice.xml',
+            url: 'https://handler.twilio.com/twiml/EHa81ec24cdcc086714c029aaada0a87ed',
             to: phoneNumber,
             from: phoneNumberVoiceFrom
           })

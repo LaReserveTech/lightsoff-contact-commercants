@@ -106,3 +106,5 @@ dist
 # Others
 places.json
 reviews.json
+testPhone.js
+testSMS.js
