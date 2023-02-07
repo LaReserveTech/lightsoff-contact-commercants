@@ -1,0 +1,30 @@
+#################################
+#################################
+## Code Coverage Actions ##
+#################################
+#################################
+name: Code Coverage
+
+#############################
+# Start the job on all push #
+#############################
+on:
+  push:
+  pull_request:
+    branches: [master, main]
+
+###############
+# Set the Job #
+###############
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ArtiomTr/jest-coverage-report-action@v2
+        id: coverage
+        with:
+          output: report-markdown
+
+  

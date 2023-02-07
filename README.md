@@ -1,8 +1,9 @@
 # lightsoff-contact-commercants
 
 [![Lint Code Base](https://github.com/LaReserveTech/lightsoff-contact-commercants/actions/workflows/linter.yml/badge.svg)](https://github.com/LaReserveTech/lightsoff-contact-commercants/actions/workflows/linter.yml)
-
 [![CodeQL](https://github.com/LaReserveTech/lightsoff-contact-commercants/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/LaReserveTech/lightsoff-contact-commercants/actions/workflows/github-code-scanning/codeql)
+[![DeepScan grade](https://deepscan.io/api/teams/20315/projects/23795/branches/726211/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=20315&pid=23795&bid=726211)
+[![DeepSource](https://deepsource.io/gh/LaReserveTech/lightsoff-contact-commercants.svg/?label=active+issues&show_trend=true&token=UdiMYggOKCmf_DVsVwdKpiy-)](https://deepsource.io/gh/LaReserveTech/lightsoff-contact-commercants/?ref=repository-badge)
 
 This repository contains two scripts :
 
