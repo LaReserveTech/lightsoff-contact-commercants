@@ -50,6 +50,7 @@ tempData()
             console.log(err)
           } else {
             console.log('Réponse supprimée : ' + messageID)
+            console.log(res)
           }
         }
       )
