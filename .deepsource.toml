@@ -6,9 +6,6 @@ name = "javascript"
   environment = ["nodejs", "jquery"]
   dialect = "typescript"
 
-[[analyzers]]
-name = "test-coverage"
-
 [[transformers]]
 name = "prettier"
 
