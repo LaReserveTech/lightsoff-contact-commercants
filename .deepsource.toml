@@ -3,7 +3,7 @@ version = 1
 [[analyzers]]
 name = "javascript"
 [analyzers.meta]
-  environment = ["nodejs", "jquery"]
+  environment = ["nodejs"]
   dialect = "typescript"
 
 [[transformers]]
