@@ -10,7 +10,7 @@ const tempData = async () => {
   return new Promise((resolve, reject) => {
     ovh.request(
       'GET',
-      '/sms/${process.env.OVH_SERVICE_NAME}/incoming',
+      `/sms/${process.env.OVH_SERVICE_NAME}/incoming`,
       function (err, data) {
         if (err) {
           reject(err)
@@ -27,7 +27,7 @@ tempData()
     messages.forEach((messageID) => {
       ovh.request(
         'GET',
-        '/sms/${process.env.OVH_SERVICE_NAME}/incoming/' + messageID,
+        `/sms/${process.env.OVH_SERVICE_NAME}/incoming/` + messageID,
         function (err, msgText) {
           if (err) {
             console.log(err)
@@ -44,7 +44,7 @@ tempData()
 
       ovh.request(
         'DELETE',
-        '/sms/${process.env.OVH_SERVICE_NAME}/incoming/' + messageID,
+        `/sms/${process.env.OVH_SERVICE_NAME}/incoming/` + messageID,
         function (err, res) {
           if (err) {
             console.log(err)
