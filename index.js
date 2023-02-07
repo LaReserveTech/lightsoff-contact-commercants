@@ -19,6 +19,12 @@ const ovh = require('ovh')({
   consumerKey: process.env.OVH_CONSUMER_KEY
 })
 
+/**
+ * 
+ * @param {ID of place looked for} id 
+ * 
+ * @returns Place object
+ */
 const findPlaceById = (id) => {
   const key = Object.keys(places).find(
     (place) => places[place]['Google Place ID'] === id
@@ -26,6 +32,11 @@ const findPlaceById = (id) => {
   return places[key]
 }
 
+/**
+ * 
+ * @param {ID of place that we looked for reviews} id 
+ * @returns Array of reviews for Google Place ID & with Do It For Me true
+ */
 const findOtherReviews = (id) => {
   const key = Object.keys(reviews).find(
     (review) =>

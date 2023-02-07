@@ -48,7 +48,7 @@ tempData()
 
       ovh.request(
         'DELETE',
-        `/sms/${process.env.OVH_SERVICE_NAME}/incoming/` + messageID,
+        `/sms/${process.env.OVH_SERVICE_NAME}/incoming/${messageID}`,
         function (err, res) {
           if (err) {
             console.log(err)
