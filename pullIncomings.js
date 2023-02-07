@@ -42,17 +42,12 @@ tempData()
         }
       )
 
-      ovh.request(
-        'DELETE',
-        '/sms/' + process.env.OVH_SERVICE_NAME + '/incoming/' + messageID,
-        function (err, res) {
-          if (err) {
-            console.log(err)
-          } else {
-            console.log('Réponse supprimée : ' + messageID)
-          }
-        }
-      )
+    ovh.request('DELETE', '/sms/' + process.env.OVH_SERVICE_NAME + '/incoming/' + messageID, function (err, res) {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log('Réponse supprimée : ' + messageID)
+      }
     })
   })
   .catch((err) => {
