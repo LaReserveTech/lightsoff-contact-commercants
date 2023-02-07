@@ -71,7 +71,7 @@ reviews.forEach((review) => {
 
         // évaluation du numéro : si fixe => appel / si portable => SMS / si 08 => nothing
         if (phoneNumber[3] === '8') {
-          console.log("Numéro spécial")
+          console.log('Numéro spécial')
         } else if (phoneNumber[3] === '6' || phoneNumber[3] === '7') {
           ovh.request(
             'POST',
