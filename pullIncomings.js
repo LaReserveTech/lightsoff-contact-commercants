@@ -11,7 +11,7 @@ const axios = require('axios')
  * @returns err | data
  */
 const tempData = async () => {
-  return new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     ovh.request(
       'GET',
       `/sms/${process.env.OVH_SERVICE_NAME}/incoming`,
