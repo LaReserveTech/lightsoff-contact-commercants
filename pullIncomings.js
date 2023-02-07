@@ -6,6 +6,10 @@ const ovh = require('ovh')({
 })
 const axios = require('axios')
 
+/**
+ * Function to fetch incomings sms on OVH service
+ * @returns err | data
+ */
 const tempData = async () => {
   return new Promise((resolve, reject) => {
     ovh.request(
