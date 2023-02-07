@@ -49,7 +49,7 @@ const findOtherReviews = (id) => {
 const placesContacted = [] // array temporaire pour stocker les lieux déjà contactés au cours du run actuel de l'algo
 
 reviews.forEach((review) => {
-  if (placesContacted <= 100) {
+  if (placesContacted.length <= 100) {
     const googlePlaceId = review['Google Place ID'] // stockage du Google Place ID de la review traitée en cours
 
     // on check si on est bien sur une review ou on nous a demandé de contacter le commerce + qu'il n'y a pas d'autres reviews déjà existantes + que le numéro n'a pas déjà été contacté
@@ -69,8 +69,10 @@ reviews.forEach((review) => {
         ) // on formate correctement le numéro pour Twilio/OVH
         const phoneNumber = phoneUtil.format(number, PNF.E164)
 
-        // évaluation du numéro : si fixe => appel / si portable => SMS
-        if (phoneNumber[3] === '6' || phoneNumber[3] === '7') {
+        // évaluation du numéro : si fixe => appel / si portable => SMS / si 08 => nothing
+        if (phoneNumber[3] === '8') {
+          console.log("Numéro spécial")
+        } else if (phoneNumber[3] === '6' || phoneNumber[3] === '7') {
           ovh.request(
             'POST',
             `/sms/${process.env.OVH_SERVICE_NAME}/jobs`,
@@ -84,15 +86,15 @@ reviews.forEach((review) => {
             },
             function (errsend, result) {
               console.log(errsend, result)
+
+              // on ajoute une review SMS sur l'api
+              axios({
+                method: 'post',
+                url: `${process.env.API_URL}places/${googlePlaceId}/reviews`,
+                data: { do_it_for_me: false, type: 'SMS' }
+              })
             }
           )
-
-          // on ajoute une review SMS sur l'api
-          axios({
-            method: 'post',
-            url: `${process.env.API_URL}places/${googlePlaceId}/reviews`,
-            data: { do_it_for_me: false, type: 'SMS' }
-          })
         } else {
           client.calls
             .create({
@@ -100,14 +102,16 @@ reviews.forEach((review) => {
               to: phoneNumber,
               from: phoneNumberVoiceFrom
             })
-            .then((call) => console.log(call.sid))
+            .then((call) => {
+              console.log(call.sid)
 
-          // on ajoute une review PHONE CALL sur l'api
-          axios({
-            method: 'post',
-            url: `${process.env.API_URL}places/${googlePlaceId}/reviews`,
-            data: { do_it_for_me: false, type: 'PHONE_CALL' }
-          })
+              // on ajoute une review PHONE CALL sur l'api
+              axios({
+                method: 'post',
+                url: `${process.env.API_URL}places/${googlePlaceId}/reviews`,
+                data: { do_it_for_me: false, type: 'PHONE_CALL' }
+              })
+            })
         }
 
         // on ajoute la Google Place dans le tableau des places déjà contactées au cours du run
