@@ -62,7 +62,7 @@ reviews.forEach((review) => {
         if (phoneNumber[3] === '6' || phoneNumber[3] === '7') {
           ovh.request(
             'POST',
-            '/sms/' + process.env.OVH_SERVICE_NAME + '/jobs',
+            `/sms/${process.env.OVH_SERVICE_NAME}/jobs`,
             {
               message:
                 'Bonjour, plusieurs clients ont indiqué que la devanture de votre commerce restait allumée la nuit. Si c’est le cas, auriez-vous la gentillesse de l’éteindre en partant le soir ? Nous sommes en pleine crise énergétique et il est essentiel que nous fassions tous attention à faire des économies d’énergie pour éviter les coupures cet hiver et préserver notre planète. Chaque geste compte. En plus, depuis février 2022 la loi a été endurcie et vous risquez une forte amende en cas de contrôle. Bonne journée.',
@@ -79,7 +79,7 @@ reviews.forEach((review) => {
           // on ajoute une review SMS sur l'api
           axios({
             method: 'post',
-            url: process.env.API_URL + 'places/' + googlePlaceId + '/reviews',
+            url: `${process.env.API_URL}places/${googlePlaceId}/reviews`,
             data: { do_it_for_me: false, type: 'SMS' }
           })
         } else {
@@ -94,7 +94,7 @@ reviews.forEach((review) => {
           // on ajoute une review PHONE CALL sur l'api
           axios({
             method: 'post',
-            url: process.env.API_URL + 'places/' + googlePlaceId + '/reviews',
+            url: `${process.env.API_URL}places/${googlePlaceId}/reviews`,
             data: { do_it_for_me: false, type: 'PHONE_CALL' }
           })
         }

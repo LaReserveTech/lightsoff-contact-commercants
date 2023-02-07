@@ -27,7 +27,7 @@ tempData()
     messages.forEach((messageID) => {
       ovh.request(
         'GET',
-        `/sms/${process.env.OVH_SERVICE_NAME}/incoming/` + messageID,
+        `/sms/${process.env.OVH_SERVICE_NAME}/incoming/${messageID}`,
         function (err, msgText) {
           if (err) {
             console.log(err)
@@ -49,7 +49,7 @@ tempData()
           if (err) {
             console.log(err)
           } else {
-            console.log('Réponse supprimée : ' + messageID)
+            console.log(`Réponse supprimée : ${messageID}`)
             console.log(res)
           }
         }
