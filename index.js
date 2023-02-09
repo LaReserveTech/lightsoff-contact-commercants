@@ -21,7 +21,7 @@ const ovh = require('ovh')({
 
 /**
  *
- * @param {ID of place looked for} id
+ * @param {string} id
  *
  * @returns Place object
  */
@@ -34,7 +34,7 @@ const findPlaceById = (id) => {
 
 /**
  *
- * @param {ID of place that we looked for reviews} id
+ * @param {string} id
  * @returns Array of reviews for Google Place ID & with Do It For Me true
  */
 const findOtherReviews = (id) => {
