@@ -1,23 +1,23 @@
-const reviews = require('./reviews.json')
-const places = require('./places.json')
-const axios = require('axios')
+const reviews = require('./reviews.json');
+const places = require('./places.json');
+const axios = require('axios');
 
-const PNF = require('google-libphonenumber').PhoneNumberFormat
+const PNF = require('google-libphonenumber').PhoneNumberFormat;
 const phoneUtil =
-  require('google-libphonenumber').PhoneNumberUtil.getInstance()
+  require('google-libphonenumber').PhoneNumberUtil.getInstance();
 
-require('dotenv').config()
+require('dotenv').config();
 
-const accountSid = process.env.TWILIO_ACCOUND_SID
-const authToken = process.env.TWILIO_AUTH_TOKEN
-const phoneNumberVoiceFrom = process.env.TWILIO_PHONE_VOICE
-const client = require('twilio')(accountSid, authToken)
+const accountSid = process.env.TWILIO_ACCOUND_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const phoneNumberVoiceFrom = process.env.TWILIO_PHONE_VOICE;
+const client = require('twilio')(accountSid, authToken);
 
 const ovh = require('ovh')({
   appKey: process.env.OVH_APP_KEY,
   appSecret: process.env.OVH_APP_SECRET_KEY,
-  consumerKey: process.env.OVH_CONSUMER_KEY
-})
+  consumerKey: process.env.OVH_CONSUMER_KEY,
+});
 
 /**
  *
@@ -28,9 +28,9 @@ const ovh = require('ovh')({
 const findPlaceById = (id) => {
   const key = Object.keys(places).find(
     (place) => places[place]['Google Place ID'] === id
-  )
-  return places[key]
-}
+  );
+  return places[key];
+};
 
 /**
  *
@@ -42,15 +42,19 @@ const findOtherReviews = (id) => {
     (review) =>
       reviews[review]['Google Place ID'] === id &&
       reviews[review]['Do It For Me'] === false
-  )
-  return reviews[key]
-}
+  );
+  return reviews[key];
+};
 
-const placesContacted = [] // array temporaire pour stocker les lieux déjà contactés au cours du run actuel de l'algo
+const placesContacted = []; // array temporaire pour stocker les lieux déjà contactés au cours du run actuel de l'algo
 
-reviews.forEach((review) => {
-  if (placesContacted.length <= 100) {
-    const googlePlaceId = review['Google Place ID'] // stockage du Google Place ID de la review traitée en cours
+const main = async () => {
+  for (const review of reviews) {
+    if (placesContacted.length > 100) {
+      continue;
+    }
+
+    const googlePlaceId = review['Google Place ID']; // stockage du Google Place ID de la review traitée en cours
 
     // on check si on est bien sur une review ou on nous a demandé de contacter le commerce + qu'il n'y a pas d'autres reviews déjà existantes + que le numéro n'a pas déjà été contacté
     if (
@@ -58,20 +62,20 @@ reviews.forEach((review) => {
       findOtherReviews(googlePlaceId) === undefined &&
       placesContacted.find((id) => id === googlePlaceId) === undefined
     ) {
-      const place = findPlaceById(googlePlaceId) // on stock la Google Place
-      const phoneNumberNotFormatted = place['Phone Number'] // on stock le numéro associé à la Google Place
+      const place = findPlaceById(googlePlaceId); // on stock la Google Place
+      const phoneNumberNotFormatted = place['Phone Number']; // on stock le numéro associé à la Google Place
 
       // on check si le numéro n'est pas vide
       if (phoneNumberNotFormatted !== null) {
         const number = phoneUtil.parseAndKeepRawInput(
           phoneNumberNotFormatted,
           'FR'
-        ) // on formate correctement le numéro pour Twilio/OVH
-        const phoneNumber = phoneUtil.format(number, PNF.E164)
+        ); // on formate correctement le numéro pour Twilio/OVH
+        const phoneNumber = phoneUtil.format(number, PNF.E164);
 
         // évaluation du numéro : si fixe => appel / si portable => SMS / si 08 => nothing
         if (phoneNumber[3] === '8') {
-          console.log('Numéro spécial')
+          console.log('Numéro spécial');
         } else if (phoneNumber[3] === '6' || phoneNumber[3] === '7') {
           ovh.request(
             'POST',
@@ -82,41 +86,45 @@ reviews.forEach((review) => {
               senderForResponse: true,
               noStopClause: true,
               tag: 'Contact SMS LightsOff',
-              receivers: [phoneNumber]
+              receivers: [phoneNumber],
             },
             function (errsend, result) {
-              console.log(errsend, result)
+              console.log(errsend, result);
 
               // on ajoute une review SMS sur l'api
               axios({
                 method: 'post',
                 url: `${process.env.API_URL}places/${googlePlaceId}/reviews`,
-                data: { do_it_for_me: false, type: 'SMS' }
-              })
+                data: { do_it_for_me: false, type: 'SMS' },
+              });
             }
-          )
+          );
         } else {
           client.calls
             .create({
               url: 'https://handler.twilio.com/twiml/EHa81ec24cdcc086714c029aaada0a87ed',
               to: phoneNumber,
-              from: phoneNumberVoiceFrom
+              from: phoneNumberVoiceFrom,
             })
             .then((call) => {
-              console.log(call.sid)
+              console.log(call.sid);
 
               // on ajoute une review PHONE CALL sur l'api
               axios({
                 method: 'post',
                 url: `${process.env.API_URL}places/${googlePlaceId}/reviews`,
-                data: { do_it_for_me: false, type: 'PHONE_CALL' }
-              })
-            })
+                data: { do_it_for_me: false, type: 'PHONE_CALL' },
+              });
+            });
         }
 
         // on ajoute la Google Place dans le tableau des places déjà contactées au cours du run
-        placesContacted.push(googlePlaceId)
+        placesContacted.push(googlePlaceId);
+
+        await new Promise((resolve) => setTimeout(resolve, 500));
       }
     }
   }
-})
+};
+
+main();
