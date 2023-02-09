@@ -16,7 +16,7 @@ const client = require('twilio')(accountSid, authToken)
 const ovh = require('ovh')({
   appKey: process.env.OVH_APP_KEY,
   appSecret: process.env.OVH_APP_SECRET_KEY,
-  consumerKey: process.env.OVH_CONSUMER_KEY
+  consumerKey: process.env.OVH_CONSUMER_KEY,
 })
 
 /**
@@ -48,8 +48,12 @@ const findOtherReviews = (id) => {
 
 const placesContacted = [] // array temporaire pour stocker les lieux déjà contactés au cours du run actuel de l'algo
 
-reviews.forEach((review) => {
-  if (placesContacted.length <= 100) {
+const main = async () => {
+  for (const review of reviews) {
+    if (placesContacted.length > 100) {
+      continue
+    }
+
     const googlePlaceId = review['Google Place ID'] // stockage du Google Place ID de la review traitée en cours
 
     // on check si on est bien sur une review ou on nous a demandé de contacter le commerce + qu'il n'y a pas d'autres reviews déjà existantes + que le numéro n'a pas déjà été contacté
@@ -82,7 +86,7 @@ reviews.forEach((review) => {
               senderForResponse: true,
               noStopClause: true,
               tag: 'Contact SMS LightsOff',
-              receivers: [phoneNumber]
+              receivers: [phoneNumber],
             },
             function (errsend, result) {
               console.log(errsend, result)
@@ -91,7 +95,7 @@ reviews.forEach((review) => {
               axios({
                 method: 'post',
                 url: `${process.env.API_URL}places/${googlePlaceId}/reviews`,
-                data: { do_it_for_me: false, type: 'SMS' }
+                data: { do_it_for_me: false, type: 'SMS' },
               })
             }
           )
@@ -100,7 +104,7 @@ reviews.forEach((review) => {
             .create({
               url: 'https://handler.twilio.com/twiml/EHa81ec24cdcc086714c029aaada0a87ed',
               to: phoneNumber,
-              from: phoneNumberVoiceFrom
+              from: phoneNumberVoiceFrom,
             })
             .then((call) => {
               console.log(call.sid)
@@ -109,14 +113,18 @@ reviews.forEach((review) => {
               axios({
                 method: 'post',
                 url: `${process.env.API_URL}places/${googlePlaceId}/reviews`,
-                data: { do_it_for_me: false, type: 'PHONE_CALL' }
+                data: { do_it_for_me: false, type: 'PHONE_CALL' },
               })
             })
         }
 
         // on ajoute la Google Place dans le tableau des places déjà contactées au cours du run
         placesContacted.push(googlePlaceId)
+
+        await new Promise((resolve) => setTimeout(resolve, 500))
       }
     }
   }
-})
+}
+
+main()
