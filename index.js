@@ -88,7 +88,7 @@ const main = async () => {
               tag: "Contact SMS LightsOff",
               receivers: [phoneNumber],
             },
-            function (errsend, result) {
+            (errsend, result) => {
               console.log(errsend, result);
 
               // on ajoute une review SMS sur l'api

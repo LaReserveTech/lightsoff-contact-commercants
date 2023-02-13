@@ -54,7 +54,7 @@ const downloader = async (
 
   const json = JSON.stringify(datasetPlaces.data)
 
-  fs.writeFile(fileName, json, 'utf8', function (res, err) {
+  fs.writeFile(fileName, json, 'utf8', (res, err) => {
     console.log(res, err)
   })
 }
