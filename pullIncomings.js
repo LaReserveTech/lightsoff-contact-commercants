@@ -15,7 +15,7 @@ const tempData = async () => {
     ovh.request(
       'GET',
       `/sms/${process.env.OVH_SERVICE_NAME}/incoming`,
-       (err, data) => { 
+      (err, data) => {
         if (err) {
           reject(err)
         } else {
