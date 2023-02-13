@@ -7,7 +7,7 @@
   "extends": "standard-with-typescript",
   "overrides": [],
   "parserOptions": {
-    "ecmaVersion": 14
+    "ecmaVersion": 2023
   },
   "rules": {}
 }
