@@ -50,19 +50,16 @@ const placesContacted = [] // array temporaire pour stocker les lieux déjà con
 
 const main = async () => {
   for (const review of reviews) {
-    if (placesContacted.length > 100) {
-      continue
-    }
-
     const googlePlaceId = review['Google Place ID'] // stockage du Google Place ID de la review traitée en cours
+    const place = findPlaceById(googlePlaceId) // on stock la Google Place
 
     // on check si on est bien sur une review ou on nous a demandé de contacter le commerce + qu'il n'y a pas d'autres reviews déjà existantes + que le numéro n'a pas déjà été contacté
     if (
       review['Do It For Me'] === true &&
       findOtherReviews(googlePlaceId) === undefined &&
-      placesContacted.find((id) => id === googlePlaceId) === undefined
+      placesContacted.find((id) => id === googlePlaceId) === undefined &&
+      place['Contacted Count'] === 0
     ) {
-      const place = findPlaceById(googlePlaceId) // on stock la Google Place
       const phoneNumberNotFormatted = place['Phone Number'] // on stock le numéro associé à la Google Place
 
       // on check si le numéro n'est pas vide
@@ -102,7 +99,7 @@ const main = async () => {
         } else {
           client.calls
             .create({
-              url: 'https://handler.twilio.com/twiml/EHa81ec24cdcc086714c029aaada0a87ed',
+              url: `${process.env.TWILIO_HANDLER}`,
               to: phoneNumber,
               from: phoneNumberVoiceFrom
             })
@@ -120,6 +117,11 @@ const main = async () => {
 
         // on ajoute la Google Place dans le tableau des places déjà contactées au cours du run
         placesContacted.push(googlePlaceId)
+
+        axios({
+          method: 'post',
+          url: `${process.env.API_URL}places/${googlePlaceId}/increase_contacted_count`
+        })
 
         await new Promise((resolve) => setTimeout(resolve, 500))
       }
