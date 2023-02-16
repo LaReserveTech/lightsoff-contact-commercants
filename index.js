@@ -118,6 +118,8 @@ const main = async () => {
         // on ajoute la Google Place dans le tableau des places déjà contactées au cours du run
         placesContacted.push(googlePlaceId)
 
+        await new Promise((resolve) => setTimeout(resolve, 500))
+
         axios({
           method: 'post',
           url: `${process.env.API_URL}places/${googlePlaceId}/increase_contacted_count`
