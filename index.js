@@ -58,7 +58,7 @@ const main = async () => {
       review['Do It For Me'] === true &&
       findOtherReviews(googlePlaceId) === undefined &&
       placesContacted.find((id) => id === googlePlaceId) === undefined &&
-      place['Contacted Count'] === 0
+      place['Contacted Count'] !== 1
     ) {
       const phoneNumberNotFormatted = place['Phone Number'] // on stock le numéro associé à la Google Place
 
