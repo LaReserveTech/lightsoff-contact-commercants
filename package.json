@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "install": "npx envdist"
+    "install": "npx envdist",
+    "test": "exit 0"
   },
   "repository": {
     "type": "git",
