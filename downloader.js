@@ -35,8 +35,7 @@ const downloader = async (
         accept: '*/*',
         'accept-language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
         'content-type': 'application/x-www-form-urlencoded;charset=UTF-8',
-        cookie:
-          `metabase.DEVICE=50796a71-d0ec-49c3-9dcd-d453b57c5f53; _ga=GA1.2.938353226.1673289574; metabase.TIMEOUT=alive; metabase.SESSION=${response.data.id}; _gid=GA1.2.1794784591.1675763957; _gat=1`,
+        cookie: `metabase.DEVICE=50796a71-d0ec-49c3-9dcd-d453b57c5f53; _ga=GA1.2.938353226.1673289574; metabase.TIMEOUT=alive; metabase.SESSION=${response.data.id}; _gid=GA1.2.1794784591.1675763957; _gat=1`,
         origin: `https://${process.env.METABASE_URL}`,
         referer: `https://${process.env.METABASE_URL}/question`,
         'sec-ch-ua':
