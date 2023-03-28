@@ -7,7 +7,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v7
+      - uses: actions/stale@v8
         with:
           stale-issue-message: 'This issue is inactive. Close by Stale action'
           stale-pr-message: 'This PR is inactive. Close by Stale action'
