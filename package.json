@@ -24,7 +24,7 @@
     "dotenv": "^16.0.3",
     "fs": "^0.0.1-security",
     "google-libphonenumber": "^3.2.32",
-    "got": "^12.5.3",
+    "got": "^14.2.0",
     "ovh": "^2.0.3",
     "postgres": "^3.3.3",
     "twilio": "^4.7.2"
